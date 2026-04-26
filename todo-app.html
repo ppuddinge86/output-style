@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할 일 목록 앱</title>
+    <!-- Tailwind CSS 사용 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- 제목 -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">📝 할 일 목록</h1>
+            <p class="text-gray-600 mt-2">오늘 할 일을 정리해보세요!</p>
+        </div>
+
+        <!-- 카드 컨테이너 -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <!-- 입력 영역 -->
+            <div class="flex gap-2 mb-6">
+                <input
+                    type="text"
+                    id="todoInput"
+                    placeholder="새로운 할 일을 입력하세요..."
+                    class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition"
+                />
+                <button
+                    id="addBtn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition"
+                >
+                    추가
+                </button>
+            </div>
+
+            <!-- 할 일 목록 -->
+            <ul id="todoList" class="space-y-2">
+                <!-- 여기에 할 일이 추가됩니다 -->
+            </ul>
+
+            <!-- 빈 상태 메시지 -->
+            <div id="emptyMessage" class="text-center text-gray-400 py-8">
+                아직 할 일이 없어요. 첫 번째 할 일을 추가해보세요! ✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // HTML 요소들을 가져오기
+        const todoInput = document.getElementById('todoInput');
+        const addBtn = document.getElementById('addBtn');
+        const todoList = document.getElementById('todoList');
+        const emptyMessage = document.getElementById('emptyMessage');
+
+        // 1️⃣ 할 일 추가 함수
+        function addTodo() {
+            const text = todoInput.value.trim(); // 입력값 가져오기 (공백 제거)
+
+            // 입력값이 비어있으면 경고
+            if (text === '') {
+                alert('할 일을 입력해주세요!');
+                return;
+            }
+
+            console.log('📌 새로운 할 일 추가:', text);
+
+            // 새로운 할 일 항목 만들기
+            const li = document.createElement('li');
+            li.class = 'todo-item'; // CSS 용도
+
+            // HTML 구조 만들기
+            li.innerHTML = `
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <!-- 체크박스 -->
+                    <input
+                        type="checkbox"
+                        class="w-5 h-5 cursor-pointer text-blue-500 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <!-- 할 일 텍스트 -->
+                    <span class="flex-1 text-gray-800">
+                        ${text}
+                    </span>
+                    <!-- 삭제 버튼 -->
+                    <button class="delete-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition">
+                        삭제
+                    </button>
+                </div>
+            `;
+
+            // 목록에 추가
+            todoList.appendChild(li);
+            console.log('✅ 할 일이 목록에 추가되었습니다');
+
+            // 입력값 초기화
+            todoInput.value = '';
+            todoInput.focus(); // 다시 입력창에 커서 두기
+
+            // 빈 상태 메시지 숨기기
+            updateEmptyMessage();
+
+            // 체크박스 이벤트 연결
+            const checkbox = li.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', toggleTodo);
+
+            // 삭제 버튼 이벤트 연결
+            const deleteBtn = li.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', deleteTodo);
+        }
+
+        // 2️⃣ 체크 시 취소선 표시 함수
+        function toggleTodo(e) {
+            const span = e.target.nextElementSibling; // 체크박스 다음 요소(텍스트)
+
+            if (e.target.checked) {
+                // 체크됨 → 취소선 추가
+                span.classList.add('line-through', 'text-gray-400');
+                console.log('✔️ 완료:', span.textContent);
+            } else {
+                // 체크 해제 → 취소선 제거
+                span.classList.remove('line-through', 'text-gray-400');
+                console.log('↩️ 다시 진행 중:', span.textContent);
+            }
+        }
+
+        // 3️⃣ 할 일 삭제 함수
+        function deleteTodo(e) {
+            const li = e.target.closest('li'); // 클릭한 버튼의 상위 <li> 찾기
+            const text = li.querySelector('span').textContent;
+
+            li.remove(); // 목록에서 제거
+            console.log('🗑️ 삭제됨:', text);
+
+            // 빈 상태 메시지 표시 여부 업데이트
+            updateEmptyMessage();
+        }
+
+        // 4️⃣ 빈 상태 메시지 업데이트 함수
+        function updateEmptyMessage() {
+            // 할 일이 하나도 없으면 메시지 표시
+            if (todoList.children.length === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+            }
+        }
+
+        // 5️⃣ 버튼 클릭 이벤트
+        addBtn.addEventListener('click', addTodo);
+
+        // 6️⃣ Enter 키 입력으로도 추가 가능하게
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        console.log('✨ 할 일 목록 앱이 준비되었습니다!');
+    </script>
+</body>
+</html>

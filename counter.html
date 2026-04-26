@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카운터 앱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <!-- 제목 -->
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">카운터</h1>
+
+        <!-- 카운트 표시 영역 -->
+        <div class="bg-blue-50 rounded-lg p-8 mb-8 text-center">
+            <p class="text-gray-600 text-sm mb-2">현재 카운트</p>
+            <p id="counter" class="text-6xl font-bold text-blue-600">0</p>
+        </div>
+
+        <!-- 버튼 그룹 -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <!-- 감소 버튼 -->
+            <button
+                id="decreaseBtn"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg transition duration-200"
+            >
+                -1
+            </button>
+
+            <!-- 리셋 버튼 -->
+            <button
+                id="resetBtn"
+                class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-4 px-4 rounded-lg transition duration-200"
+            >
+                리셋
+            </button>
+
+            <!-- 증가 버튼 -->
+            <button
+                id="increaseBtn"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-lg transition duration-200"
+            >
+                +1
+            </button>
+        </div>
+
+        <!-- 설명 텍스트 -->
+        <p class="text-center text-gray-500 text-sm">버튼을 클릭해서 숫자를 조정하세요!</p>
+    </div>
+
+    <script>
+        // 1. 변수 설정 - 카운트 값과 HTML 요소들을 저장합니다
+        let count = 0;
+        const counterDisplay = document.getElementById('counter');
+        const increaseBtn = document.getElementById('increaseBtn');
+        const decreaseBtn = document.getElementById('decreaseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // 2. 화면 업데이트 함수 - 카운트 값이 바뀔 때마다 화면을 갱신합니다
+        function updateDisplay() {
+            counterDisplay.textContent = count;
+            console.log('카운트 업데이트됨:', count);
+        }
+
+        // 3. 증가 버튼 클릭 이벤트
+        increaseBtn.addEventListener('click', function() {
+            count = count + 1;  // 또는 count++
+            console.log('증가 버튼 클릭 - 현재 카운트:', count);
+            updateDisplay();
+        });
+
+        // 4. 감소 버튼 클릭 이벤트
+        decreaseBtn.addEventListener('click', function() {
+            count = count - 1;  // 또는 count--
+            console.log('감소 버튼 클릭 - 현재 카운트:', count);
+            updateDisplay();
+        });
+
+        // 5. 리셋 버튼 클릭 이벤트
+        resetBtn.addEventListener('click', function() {
+            count = 0;
+            console.log('리셋 버튼 클릭 - 카운트 초기화됨');
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>

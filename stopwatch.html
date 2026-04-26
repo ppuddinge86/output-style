@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스톱워치</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
+        <!-- 제목 -->
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">⏱️ 스톱워치</h1>
+
+        <!-- 시간 표시 영역 -->
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl p-8 mb-8 text-center">
+            <div id="time-display" class="text-6xl font-bold text-white font-mono tracking-widest">
+                00:00:00
+            </div>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="flex gap-4 justify-center mb-6">
+            <!-- 시작/일시정지 버튼 -->
+            <button
+                id="start-pause-btn"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+                시작
+            </button>
+
+            <!-- 리셋 버튼 -->
+            <button
+                id="reset-btn"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-8 rounded-lg transition duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
+            >
+                리셋
+            </button>
+        </div>
+
+        <!-- 상태 표시 (선택사항) -->
+        <p class="text-center text-gray-600 text-sm">
+            <span id="status">준비됨</span>
+        </p>
+    </div>
+
+    <script>
+        // 스톱워치 상태 관리
+        let elapsedTime = 0; // 경과 시간 (밀리초 단위)
+        let isRunning = false; // 실행 중인지 여부
+        let intervalId = null; // setInterval 저장용
+
+        // HTML 요소 가져오기
+        const timeDisplay = document.getElementById('time-display');
+        const startPauseBtn = document.getElementById('start-pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const statusDisplay = document.getElementById('status');
+
+        // 시간을 MM:SS:MS 형식으로 변환하는 함수
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const milliseconds = Math.floor((ms % 1000) / 10); // 센티초 단위
+
+            // 각 숫자를 2자리로 맞추기 (예: 5 → 05)
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+        }
+
+        // 화면 업데이트 함수
+        function updateDisplay() {
+            timeDisplay.textContent = formatTime(elapsedTime);
+            console.log('시간 업데이트:', formatTime(elapsedTime)); // 흐름 확인용 로그
+        }
+
+        // 시작/일시정지 버튼 클릭
+        startPauseBtn.addEventListener('click', function() {
+            if (isRunning) {
+                // 일시정지
+                clearInterval(intervalId); // 타이머 멈추기
+                isRunning = false;
+                startPauseBtn.textContent = '시작';
+                startPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                startPauseBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                statusDisplay.textContent = '일시정지됨';
+                console.log('일시정지됨');
+            } else {
+                // 시작
+                isRunning = true;
+                startPauseBtn.textContent = '일시정지';
+                startPauseBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                startPauseBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                statusDisplay.textContent = '실행 중...';
+                console.log('시작됨');
+
+                // 10밀리초마다 시간 증가
+                intervalId = setInterval(function() {
+                    elapsedTime += 10;
+                    updateDisplay();
+                }, 10);
+            }
+        });
+
+        // 리셋 버튼 클릭
+        resetBtn.addEventListener('click', function() {
+            clearInterval(intervalId); // 실행 중인 타이머 멈추기
+            elapsedTime = 0; // 시간 초기화
+            isRunning = false;
+
+            // UI 업데이트
+            timeDisplay.textContent = '00:00:00';
+            startPauseBtn.textContent = '시작';
+            startPauseBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+            startPauseBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            statusDisplay.textContent = '준비됨';
+            console.log('리셋됨 - 00:00:00');
+        });
+    </script>
+</body>
+</html>
